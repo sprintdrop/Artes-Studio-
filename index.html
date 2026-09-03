@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Artes Studio — Liquid Glassmorphism</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+    /* ===== RESET & BASE ===== */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+    }
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: #0b081a;
+        min-height: 100vh;
+        min-height: 100dvh;
+        color: #f0f0f5;
+        overflow-x: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
+    #app {
+        width: 100%;
+        max-width: 480px;
+        min-height: 100vh;
+        min-height: 100dvh;
+        position: relative;
+        background: linear-gradient(145deg, #0b081a 0%, #1a1040 50%, #0d0b1a 100%);
+        background-attachment: fixed;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    /* Анимированный фон — жидкое стекло */
+    #app::before {
+        content: '';
+        position: fixed;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: 
+            radial-gradient(circle at 30% 40%, rgba(108, 92, 231, 0.15) 0%, transparent 60%),
+            radial-gradient(circle at 70% 80%, rgba(0, 180, 216, 0.12) 0%, transparent 50%),
+            radial-gradient(circle at 20% 90%, rgba(108, 92, 231, 0.08) 0%, transparent 40%);
+        animation: liquidGlass 30s ease-in-out infinite alternate;
+        z-index: 0;
+        pointer-events: none;
+    }
+    @keyframes liquidGlass {
+        0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+        25% { transform: translate(5%, 3%) scale(1.05) rotate(2deg); }
+        50% { transform: translate(-3%, 5%) scale(1.1) rotate(-1deg); }
+        75% { transform: translate(4%, -2%) scale(1.05) rotate(1.5deg); }
+        100% { transform: translate(-2%, -4%) scale(1) rotate(-0.5deg); }
+    }
+/* ===== SPLASH SCREEN ===== */
+.splash-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0b081a;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    pointer-events: none;
+}
+.splash-screen.hide {
+    opacity: 0;
+    transform: scale(0.95);
+    pointer-events: none;
+}
+.splash-content {
+    text-align: center;
+    animation: pulseGlow 1.8s ease-in-out forwards;
+}
+.splash-logo {
+    font-size: 64px;
+    color: #6c5ce7;
+    text-shadow: 0 0 40px rgba(108, 92, 231, 0.4);
+    margin-bottom: 8px;
+}
+.splash-title {
+    font-size: clamp(28px, 8vw, 40px);
+    font-weight: 700;
+    letter-spacing: 6px;
+    background: linear-gradient(135deg, #f0f0f5 30%, #6c5ce7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.splash-subtitle {
+    font-size: clamp(14px, 3.5vw, 18px);
+    color: #9895b0;
+    letter-spacing: 2px;
+    margin-top: 4px;
+    font-weight: 400;
+}
+@keyframes pulseGlow {
+    0% { opacity: 0; transform: scale(0.96); }
+    40% { opacity: 1; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1); }
+}
+/* ===== APP HEADER ===== */
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px 10px;
+    background: rgba(11, 8, 26, 0.55);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.header-logo {
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: 2px;
+    color: #f0f0f5;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.header-logo span {
+    color: #6c5ce7;
+}
+.theme-toggle {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f0f0f5;
+    cursor: pointer;
+    transition: 0.3s;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+.theme-toggle:active { transform: scale(0.92); }
+.theme-toggle svg { width: 22px; height: 22px; stroke: #f0f0f5; }
+
+/* ===== TAB CONTENT ===== */
+.tab-container {
+    flex: 1;
+    padding: 8px 16px 80px;
+    position: relative;
+    z-index: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.tab-content {
+    display: none;
+    animation: fadeContent 0.35s ease forwards;
+}
+.tab-content.active {
+    display: block;
+}
+@keyframes fadeContent {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+.tab-title {
+    font-size: clamp(22px, 6vw, 30px);
+    font-weight: 700;
+    margin: 4px 0 18px;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #f0f0f5 40%, #9895b0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+/* ===== PORTFOLIO GRID ===== */
+.portfolio-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+.portfolio-item {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    transition: 0.2s;
+}
+.portfolio-item:active { transform: scale(0.96); }
+.portfolio-image {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: linear-gradient(135deg, #1a1040, #0d0b1a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    color: #6c5ce7;
+    overflow: hidden;
+}
+.portfolio-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.portfolio-info {
+    padding: 10px 12px 12px;
+}
+.portfolio-info h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #f0f0f5;
+    margin-bottom: 2px;
+    line-height: 1.2;
+}
+.portfolio-info p {
+    font-size: 12px;
+    color: #9895b0;
+    font-weight: 400;
+}
+/* ===== SERVICES ===== */
+.services-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.service-card {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+.service-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+}
+.service-icon {
+    font-size: 28px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(108, 92, 231, 0.15);
+    border-radius: 12px;
+}
+.service-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #f0f0f5;
+}
+.service-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 13px;
+    color: #9895b0;
+    margin: 4px 0 6px;
+}
+.service-meta strong {
+    color: #6c5ce7;
+    font-weight: 600;
+}
+.service-desc {
+    font-size: 14px;
+    color: #c8c5d8;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+.btn-order {
+    background: linear-gradient(135deg, #6c5ce7, #00b4d8);
+    border: none;
+    border-radius: 12px;
+    padding: 10px 20px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 15px;
+    width: 100%;
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: 0 4px 20px rgba(108, 92, 231, 0.3);
+}
+.btn-order:active { transform: scale(0.96); opacity: 0.9; }
+/* ===== REVIEWS CAROUSEL ===== */
+.reviews-carousel {
+    overflow: hidden;
+    position: relative;
+    touch-action: pan-y;
+}
+.reviews-track {
+    display: flex;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
+}
+.review-slide {
+    min-width: 100%;
+    padding: 4px;
+}
+.review-card {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+.review-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+.review-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6c5ce7, #00b4d8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 20px;
+    color: #fff;
+    flex-shrink: 0;
+}
+.review-name {
+    font-weight: 600;
+    font-size: 16px;
+    color: #f0f0f5;
+}
+.review-role {
+    font-size: 13px;
+    color: #9895b0;
+}
+.review-stars {
+    color: #fbbf24;
+    font-size: 16px;
+    letter-spacing: 2px;
+    margin: 4px 0 6px;
+}
+.review-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #d0cde0;
+}
+/* Dots */
+.dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+}
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: 0.3s;
+    cursor: pointer;
+}
+.dot.active {
+    background: #6c5ce7;
+    width: 24px;
+    border-radius: 4px;
+}
+/* ===== CONTACT ===== */
+.contact-block {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.contact-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 12px 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+.contact-icon {
+    font-size: 22px;
+    width: 40px;
+    text-align: center;
+}
+.contact-info {
+    flex: 1;
+    font-size: 15px;
+    color: #f0f0f5;
+    font-weight: 500;
+}
+.contact-info small {
+    display: block;
+    font-weight: 400;
+    font-size: 12px;
+    color: #9895b0;
+}
+.btn-copy {
+    background: rgba(108, 92, 231, 0.2);
+    border: 1px solid rgba(108, 92, 231, 0.2);
+    border-radius: 8px;
+    padding: 6px 14px;
+    color: #f0f0f5;
+    font-size: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-weight: 500;
+}
+.btn-copy:active { transform: scale(0.92); background: rgba(108, 92, 231, 0.4); }
+
+/* ===== FORM ===== */
+.contact-form {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+.contact-form h3 {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #f0f0f5;
+}
+.contact-form label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #9895b0;
+    display: block;
+    margin-bottom: 4px;
+}
+.contact-form input,
+.contact-form select,
+.contact-form textarea {
+    width: 100%;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    color: #f0f0f5;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    transition: 0.2s;
+    margin-bottom: 12px;
+    outline: none;
+}
+.contact-form input:focus,
+.contact-form select:focus,
+.contact-form textarea:focus {
+    border-color: #6c5ce7;
+    background: rgba(108, 92, 231, 0.08);
+}
+.contact-form textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+.contact-form select option {
+    background: #1a1040;
+    color: #f0f0f5;
+}
+.btn-submit {
+    background: linear-gradient(135deg, #6c5ce7, #00b4d8);
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
+    width: 100%;
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: 0 4px 20px rgba(108, 92, 231, 0.3);
+}
+.btn-submit:active { transform: scale(0.96); opacity: 0.9; }
+        /* ===== TAB BAR ===== */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 0 env(safe-area-inset-bottom, 8px);
+            background: rgba(11, 8, 26, 0.75);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            z-index: 100;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #9895b0;
+            font-size: 11px;
+            font-weight: 500;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            padding: 6px 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            min-height: 44px;
+            min-width: 44px;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+        }
+        .tab-btn .tab-icon {
+            font-size: 22px;
+            line-height: 1;
+        }
+        .tab-btn.active {
+            color: #6c5ce7;
+        }
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 3px;
+            background: #6c5ce7;
+            border-radius: 0 0 4px 4px;
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: rgba(11, 8, 26, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.open {
+            display: flex;
+        }
+        .modal-content {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            max-width: 400px;
+            width: 100%;
+            padding: 24px;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.8);
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            font-size: 28px;
+            background: none;
+            border: none;
+            color: #9895b0;
+            cursor: pointer;
+            padding: 4px 8px;
+            line-height: 1;
+        }
+        .modal-image {
+            width: 100%;
+            aspect-ratio: 1/1;
+            background: linear-gradient(135deg, #1a1040, #0d0b1a);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #6c5ce7;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .modal-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #f0f0f5;
+            margin-bottom: 4px;
+        }
+        .modal-category {
+            font-size: 14px;
+            color: #6c5ce7;
+            font-weight: 500;
+        }
+        .modal-desc {
+            font-size: 14px;
+            color: #c8c5d8;
+            line-height: 1.5;
+            margin: 8px 0;
+        }
+        .modal-timeline {
+            font-size: 13px;
+            color: #9895b0;
+        }
+        .modal-timeline strong {
+            color: #f0f0f5;
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(108, 92, 231, 0.92);
+            backdrop-filter: blur(12px);
+            padding: 12px 24px;
+            border-radius: 14px;
+            color: #fff;
+            font-weight: 500;
+            font-size: 14px;
+            z-index: 300;
+            opacity: 0;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            pointer-events: none;
+            box-shadow: 0 8px 30px rgba(108, 92, 231, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            white-space: nowrap;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ===== LIGHT THEME ===== */
+        body.light #app {
+            background: linear-gradient(145deg, #f0edf5 0%, #e8e4f0 50%, #f5f0fa 100%);
+        }
+        body.light #app::before {
+            background: 
+                radial-gradient(circle at 30% 40%, rgba(108, 92, 231, 0.08) 0%, transparent 60%),
+                radial-gradient(circle at 70% 80%, rgba(0, 180, 216, 0.06) 0%, transparent 50%);
+        }
+        body.light .header-logo,
+        body.light .tab-title,
+        body.light .service-title,
+        body.light .portfolio-info h4,
+        body.light .review-name,
+        body.light .contact-info,
+        body.light .modal-title,
+        body.light .contact-form h3,
+        body.light .splash-title {
+            color: #1a1040;
+            -webkit-text-fill-color: #1a1040;
+            background: none;
+        }
+        body.light .splash-title {
+            background: linear-gradient(135deg, #1a1040 30%, #6c5ce7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        body.light .tab-title {
+            background: linear-gradient(135deg, #1a1040 40%, #6c5ce7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        body.light .glass-card,
+        body.light .portfolio-item,
+        body.light .service-card,
+        body.light .review-card,
+        body.light .contact-row,
+        body.light .contact-form,
+        body.light .modal-content {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(24px);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        body.light .splash-screen { background: #f0edf5; }
+        body.light .tab-bar { background: rgba(240, 237, 245, 0.85); }
+        body.light .app-header { background: rgba(240, 237, 245, 0.6); }
+        body.light .theme-toggle svg { stroke: #1a1040; }
+        body.light .theme-toggle { border-color: rgba(26, 16, 64, 0.1); }
+        body.light .tab-btn { color: #6c6890; }
+        body.light .tab-btn.active { color: #6c5ce7; }
+        body.light .service-meta,
+        body.light .review-role,
+        body.light .portfolio-info p,
+        body.light .splash-subtitle,
+        body.light .modal-timeline,
+        body.light .contact-form label {
+            color: #4a4670;
+        }
+        body.light .service-desc,
+        body.light .review-text,
+        body.light .modal-desc {
+            color: #3a3660;
+        }
+        body.light .contact-form input,
+        body.light .contact-form select,
+        body.light .contact-form textarea {
+            background: rgba(255, 255, 255, 0.5);
+            border-color: rgba(26, 16, 64, 0.1);
+            color: #1a1040;
+        }
+        body.light .contact-form input:focus,
+        body.light .contact-form select:focus,
+        body.light .contact-form textarea:focus {
+            border-color: #6c5ce7;
+            background: rgba(255, 255, 255, 0.7);
+        }
+        body.light .dot { background: rgba(26, 16, 64, 0.15); }
+        body.light .dot.active { background: #6c5ce7; }
+        body.light .btn-copy {
+            background: rgba(108, 92, 231, 0.1);
+            border-color: rgba(108, 92, 231, 0.2);
+            color: #1a1040;
+        }
+        body.light .modal-overlay { background: rgba(240, 237, 245, 0.6); }
+        body.light .toast { background: rgba(108, 92, 231, 0.9); }
+        body.light .contact-form select option { background: #f0edf5; color: #1a1040; }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- SPLASH SCREEN -->
+        <div id="splash" class="splash-screen">
+            <div class="splash-content">
+                <div class="splash-logo">✦</div>
+                <h1 class="splash-title">Artes Studio</h1>
+                <p class="splash-subtitle">Digital Design &amp; Branding</p>
+            </div>
+        </div>
+
+        <!-- APP HEADER -->
+        <header class="app-header">
+            <div class="header-logo">✦ <span>Artes</span></div>
+            <button id="themeToggle" class="theme-toggle" aria-label="Сменить тему">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+            </button>
+        </header>
+
+        <!-- TAB CONTAINER -->
+        <main class="tab-container" id="tabContainer">
+<!-- ===== PORTFOLIO ===== -->
+<section id="tab-portfolio" class="tab-content active">
+    <h2 class="tab-title">Портфолио</h2>
+    <div class="portfolio-grid" id="portfolioGrid">
+        <!-- Данные из JS -->
+    </div>
+</section>
+<!-- ===== SERVICES ===== -->
+<section id="tab-services" class="tab-content">
+    <h2 class="tab-title">Услуги</h2>
+    <div class="services-list" id="servicesList">
+        <!-- Данные из JS -->
+    </div>
+</section>
+<!-- ===== REVIEWS ===== -->
+<section id="tab-reviews" class="tab-content">
+    <h2 class="tab-title">Отзывы</h2>
+    <div class="reviews-carousel" id="reviewsCarousel">
+        <div class="reviews-track" id="reviewsTrack">
+            <!-- Данные из JS -->
+        </div>
+        <div class="dots" id="dotsContainer"></div>
+    </div>
+</section>
+    <!-- ===== CONTACT ===== -->
+    <section id="tab-contact" class="tab-content">
+        <h2 class="tab-title">Контакты</h2>
+        <div class="contact-block">
+            <div class="contact-row">
+                <span class="contact-icon">📱</span>
+                <div class="contact-info">
+                    +7 (999) 123-45-67
+                    <small>Telegram / WhatsApp</small>
+                </div>
+                <button class="btn-copy" data-copy="+79991234567">Копировать</button>
+            </div>
+            <div class="contact-row">
+                <span class="contact-icon">✉️</span>
+                <div class="contact-info">
+                    hello@artes.studio
+                    <small>Email</small>
+                </div>
+            </div>
+            <div class="contact-row">
+                <span class="contact-icon">📌</span>
+                <div class="contact-info">
+                    @artes_studio
+                    <small>Telegram</small>
+                </div>
+            </div>
+
+            <div class="contact-form">
+                <h3>Отправить заявку</h3>
+                <form id="contactForm">
+                    <label>Ваше имя</label>
+                    <input type="text" name="name" placeholder="Алексей" required>
+
+                    <label>Email</label>
+                    <input type="email" name="email" placeholder="alex@example.com" required>
+
+                    <label>Тип работы</label>
+                    <select name="service" required>
+                        <option value="">Выберите...</option>
+                        <option value="Баннер">Баннер</option>
+                        <option value="Логотип">Логотип</option>
+                        <option value="Аватарка">Аватарка</option>
+                        <option value="Другое">Другое</option>
+                    </select>
+
+                    <label>Описание задачи</label>
+                    <textarea name="message" placeholder="Опишите, что нужно сделать..." required></textarea>
+
+                    <button type="submit" class="btn-submit">Отправить заявку</button>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+    <!-- TAB BAR -->
+    <nav class="tab-bar">
+        <button class="tab-btn active" data-tab="tab-portfolio">
+            <span class="tab-icon">🖼</span>
+            <span>Портфолио</span>
+        </button>
+        <button class="tab-btn" data-tab="tab-services">
+            <span class="tab-icon">⚡</span>
+            <span>Услуги</span>
+        </button>
+        <button class="tab-btn" data-tab="tab-reviews">
+            <span class="tab-icon">⭐</span>
+            <span>Отзывы</span>
+        </button>
+        <button class="tab-btn" data-tab="tab-contact">
+            <span class="tab-icon">✉️</span>
+            <span>Контакты</span>
+        </button>
+    </nav>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <div class="modal-image" id="modalImage">🖼</div>
+            <h3 class="modal-title" id="modalTitle">Название</h3>
+            <p class="modal-category" id="modalCategory">Категория</p>
+            <p class="modal-desc" id="modalDesc">Описание</p>
+            <p class="modal-timeline" id="modalTimeline"><strong>Срок:</strong> 2 недели</p>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">Сообщение отправлено</div>
+</div>
+<script>
+    (function() {
+        'use strict';
+
+        // ===== DATA =====
+        const data = {
+            works: [
+                { id: 1, title: 'Брендинг TechStart', category: 'Логотип', image: '🖌', description: 'Полный брендинг для технологического стартапа', timeline: '2 недели' },
+                { id: 2, title: 'Рекламный баннер', category: 'Баннер', image: '🎯', description: 'Баннер для социальных сетей', timeline: '2 дня' },
+                { id: 3, title: 'Аватарка блогера', category: 'Аватарка', image: '👤', description: 'Стильный аватар для YouTube-блогера', timeline: '1 день' },
+                { id: 4, title: 'Айдентика кофейни', category: 'Логотип', image: '☕', description: 'Логотип и стиль для кофейни', timeline: '1.5 недели' },
+                { id: 5, title: 'Баннер для магазина', category: 'Баннер', image: '🛍', description: 'Рекламный баннер для интернет-магазина', timeline: '2 дня' },
+                { id: 6, title: 'Аватарка студии', category: 'Аватарка', image: '🎨', description: 'Корпоративная аватарка для соцсетей', timeline: '1 день' }
+            ],
+            services: [
+                { id: 'banners', title: 'Баннеры', icon: '🎨', price: 'от 5 000 ₽', timeline: '2-3 дня', description: 'Разработка баннеров для соцсетей и рекламы. Адаптация под все форматы.' },
+                { id: 'logos', title: 'Логотипы', icon: '✦', price: 'от 15 000 ₽', timeline: '5-7 дней', description: 'Создание уникального фирменного стиля и логотипа для вашего бизнеса.' },
+                { id: 'avatars', title: 'Аватарки', icon: '👤', price: 'от 3 000 ₽', timeline: '1-2 дня', description: 'Дизайн аватарок для соцсетей, YouTube и мессенджеров.' }
+            ],
+            reviews: [
+                { name: 'Екатерина', role: 'Владелец бренда', text: 'Отличная работа! Логотип превзошел все ожидания. Быстро и профессионально.', stars: 5 },
+                { name: 'Михаил', role: 'YouTube-блогер', text: 'Сделали аватарку и баннеры для канала. Теперь канал выглядит дорого и стильно.', stars: 5 },
+                { name: 'Анна', role: 'Основатель стартапа', text: 'Полный брендинг под ключ. Всё четко, в срок и с душой. Рекомендую!', stars: 5 }
+            ]
+        };
+
+        // ===== DOM REFS =====
+        const splash = document.getElementById('splash');
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const portfolioGrid = document.getElementById('portfolioGrid');
+        const servicesList = document.getElementById('servicesList');
+        const reviewsTrack = document.getElementById('reviewsTrack');
+        const dotsContainer = document.getElementById('dotsContainer');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalClose = document.getElementById('modalClose');
+        const modalImage = document.getElementById('modalImage');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalCategory = document.getElementById('modalCategory');
+        const modalDesc = document.getElementById('modalDesc');
+        const modalTimeline = document.getElementById('modalTimeline');
+        const toast = document.getElementById('toast');
+        const themeToggle = document.getElementById('themeToggle');
+        const contactForm = document.getElementById('contactForm');
+
+        let currentReviewIndex = 0;
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        // ===== RENDER PORTFOLIO =====
+        function renderPortfolio() {
+            portfolioGrid.innerHTML = data.works.map(w => `
+                <div class="portfolio-item" data-id="${w.id}">
+                    <div class="portfolio-image">${w.image}</div>
+                    <div class="portfolio-info">
+                        <h4>${w.title}</h4>
+                        <p>${w.category}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+// ===== RENDER SERVICES =====
+function renderServices() {
+    servicesList.innerHTML = data.services.map(s => `
+        <div class="service-card">
+            <div class="service-header">
+                <div class="service-icon">${s.icon}</div>
+                <div class="service-title">${s.title}</div>
+            </div>
+            <div class="service-meta">
+                <span><strong>${s.price}</strong></span>
+                <span>⏱ ${s.timeline}</span>
+            </div>
+            <p class="service-desc">${s.description}</p>
+            <button class="btn-order" data-service="${s.id}">Заказать</button>
+        </div>
+    `).join('');
+
+    document.querySelectorAll('.btn-order').forEach(btn => {
+        btn.addEventListener('click', function() {
+            switchTab('tab-contact');
+        });
+    });
+}
+
+// ===== RENDER REVIEWS =====
+function renderReviews() {
+    reviewsTrack.innerHTML = data.reviews.map((r, i) => {
+        const stars = '★'.repeat(r.stars) + '☆'.repeat(5 - r.stars);
+        const initial = r.name.charAt(0);
+        return `
+            <div class="review-slide">
+                <div class="review-card">
+                    <div class="review-header">
+                        <div class="review-avatar">${initial}</div>
+                        <div>
+                            <div class="review-name">${r.name}</div>
+                            <div class="review-role">${r.role}</div>
+                        </div>
+                    </div>
+                    <div class="review-stars">${stars}</div>
+                    <p class="review-text">${r.text}</p>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    // Dots
+    dotsContainer.innerHTML = data.reviews.map((_, i) => `
+        <span class="dot ${i === 0 ? 'active' : ''}" data-index="${i}"></span>
+    `).join('');
+
+    dotsContainer.querySelectorAll('.dot').forEach(dot => {
+        dot.addEventListener('click', function() {
+            goToReview(parseInt(this.dataset.index));
+        });
+    });
+
+    updateReviewPosition();
+}
+// ===== REVIEWS CAROUSEL =====
+function goToReview(index) {
+    const total = data.reviews.length;
+    if (index < 0) index = total - 1;
+    if (index >= total) index = 0;
+    currentReviewIndex = index;
+    updateReviewPosition();
+    dotsContainer.querySelectorAll('.dot').forEach((dot, i) => {
+        dot.classList.toggle('active', i === index);
+    });
+}
+
+function updateReviewPosition() {
+    const slideWidth = reviewsTrack.parentElement.offsetWidth;
+    reviewsTrack.style.transform = `translateX(-${currentReviewIndex * 100}%)`;
+}
+
+// Touch events for carousel
+const carousel = document.getElementById('reviewsCarousel');
+carousel.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].screenX;
+}, { passive: true });
+
+carousel.addEventListener('touchend', function(e) {
+    touchEndX = e.changedTouches[0].screenX;
+    const diff = touchStartX - touchEndX;
+    if (Math.abs(diff) > 40) {
+        if (diff > 0) goToReview(currentReviewIndex + 1);
+        else goToReview(currentReviewIndex - 1);
+    }
+}, { passive: true });
+
+// Window resize update
+let resizeTimer;
+window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(updateReviewPosition, 200);
+});
+// ===== MODAL =====
+function openModal(work) {
+    modalImage.textContent = work.image;
+    modalTitle.textContent = work.title;
+    modalCategory.textContent = work.category;
+    modalDesc.textContent = work.description;
+    modalTimeline.innerHTML = `<strong>Срок:</strong> ${work.timeline}`;
+    modalOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+    modalOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+modalClose.addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+
+// ===== TAB SWITCHING =====
+function switchTab(tabId) {
+    // Update buttons
+    tabBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tabId);
+    });
+
+    // Update content
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    const target = document.getElementById(tabId);
+    if (target) target.classList.add('active');
+}
+
+tabBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+        switchTab(this.dataset.tab);
+    });
+});
+
+// ===== PORTFOLIO CLICK =====
+portfolioGrid.addEventListener('click', function(e) {
+    const item = e.target.closest('.portfolio-item');
+    if (item) {
+        const id = parseInt(item.dataset.id);
+        const work = data.works.find(w => w.id === id);
+        if (work) openModal(work);
+    }
+});
+            // ===== THEME TOGGLE =====
+            let isLight = false;
+            themeToggle.addEventListener('click', function() {
+                isLight = !isLight;
+                document.body.classList.toggle('light', isLight);
+            });
+
+            // ===== COPY PHONE =====
+            document.querySelectorAll('.btn-copy').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const text = this.dataset.copy;
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(text).then(() => {
+                            showToast('Номер скопирован!');
+                        });
+                    } else {
+                        const input = document.createElement('input');
+                        input.value = text;
+                        document.body.appendChild(input);
+                        input.select();
+                        document.execCommand('copy');
+                        input.remove();
+                        showToast('Номер скопирован!');
+                    }
+                });
+            });
+
+            // ===== FORM SUBMIT =====
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const data = {
+                    name: formData.get('name'),
+                    email: formData.get('email'),
+                    service: formData.get('service'),
+                    message: formData.get('message')
+                };
+                console.log('Заявка отправлена:', data);
+                showToast('Заявка отправлена! Мы свяжемся с вами.');
+                this.reset();
+            });
+
+            // ===== TOAST =====
+            let toastTimeout;
+
+            function showToast(message) {
+                toast.textContent = message;
+                toast.classList.add('show');
+                clearTimeout(toastTimeout);
+                toastTimeout = setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+
+            // ===== SPLASH =====
+            setTimeout(() => {
+                splash.classList.add('hide');
+                setTimeout(() => { splash.style.display = 'none'; }, 800);
+            }, 1800);
+
+            // ===== INIT =====
+            renderPortfolio();
+            renderServices();
+            renderReviews();
+
+            // Fix for iOS Safari 100vh issue
+            function setVH() {
+                let vh = window.innerHeight * 0.01;
+                document.documentElement.style.setProperty('--vh', vh + 'px');
+            }
+            setVH();
+            window.addEventListener('resize', setVH);
+
+        })();
+    </script>
+</body>
+</html>
